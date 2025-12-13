@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ti-reshavash-v16';
+const CACHE_NAME = 'ti-reshavash-v17';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -68,8 +68,14 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache
-        return caches.match(event.request);
+        // Fallback to cache, return undefined if not found (browser will handle)
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Return network error for uncached resources
+          return new Response('Network error', { status: 503, statusText: 'Service Unavailable' });
+        });
       })
   );
 });

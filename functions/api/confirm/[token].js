@@ -322,7 +322,7 @@ export async function onRequestGet(context) {
 
     await sendEmail(env, {
       to: env.RIOSV_EMAIL,
-      subject: 'Сигнал за замърсяване на въздуха – ТИ решаваш!',
+      subject: `Сигнал за замърсяване на въздуха! - ${pending.name}`,
       htmlBody: `<pre style="font-family: monospace; white-space: pre-wrap;">${escapeHtml(pending.letterText)}</pre>`,
       attachments,
       replyTo: pending.email,

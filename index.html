@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- version 0.4.0 -->
+<!-- version 0.4.1 -->
 <html lang="bg">
 <head>
   <meta charset="utf-8" />
@@ -268,6 +268,9 @@
       max-height:300px; overflow-y:auto;
     }
     .footer-note{color:var(--muted); font-size:12px; margin-top:12px}
+
+    /* DOCX download icon button */
+    #downloadDocx:hover { background: var(--light-gray); color: var(--accent); border-color: var(--accent); }
     
     /* Loading states */
     .btn.loading{pointer-events:none}
@@ -1157,14 +1160,11 @@
 
   <main>
     <div style="background:#fff3cd; color:#856404; padding:12px 20px; font-size:15px; text-align:center; border-bottom:1px solid #ffeeba; border-radius: var(--radius); margin-bottom: 16px;">
-      ⚠️ Важно: В извънработно време сигналите по имейл не се следят.  
-      Моля, звънете на <strong>Зеления телефон</strong>:  
-      <strong><a href="tel:+35962620358" class="phone-link">062/620 358</a></strong>, <strong><a href="tel:+359885322969" class="phone-link">0885 322 969</a></strong>.
+      ⚠️ Подадените сигнали в извънработно време се регистрират и обработват в първия работен ден. Моля, при спешност, звънете на денонощен <strong>Зеления телефон</strong>:  
+      <strong><a href="tel:+35962620358" class="phone-link">062 620 358</a></strong>, <strong><a href="tel:+359885322969" class="phone-link">088 532 2969</a></strong>.
     </div>
     <form id="signalForm" class="card" autocomplete="on">
       <h2>Форма за сигнал</h2>
-      
-      <div class="status" id="status" role="alert"></div>
       
       <section class="card"> <!-- Changed from fieldset.accordion-item -->
         <h2><i class="fas fa-info-circle"></i> Информация за нарушението</h2> <!-- Changed from accordion-header button -->
@@ -1287,25 +1287,29 @@
         <div class="cf-turnstile" data-sitekey="0x4AAAAAACFNgXleCp3ZWKfA" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired"></div>
       </div>
 
-      <div class="row">
-        <button type="button" class="btn" id="downloadDocx">
-          <span><i class="fas fa-file-word"></i> Свали DOCX</span>
-        </button>
-        <button type="button" class="btn secondary" id="sendToRiosv">
+      <div class="status" id="status" role="alert"></div>
+
+      <div class="row" style="justify-content: center;">
+        <button type="button" class="btn" id="sendToRiosv" style="min-width: 200px;">
           <span><i class="fas fa-paper-plane"></i> Изпрати към РИОСВ</span>
         </button>
       </div>
     </form>
 
     <section class="card">
-      <h3><i class="fas fa-eye"></i> Преглед на текста</h3>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h3 style="margin: 0;"><i class="fas fa-eye"></i> Преглед на текста</h3>
+        <button type="button" id="downloadDocx" title="Свали като DOCX файл" style="background: transparent; border: 1px solid var(--border); color: var(--muted); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+          <i class="fas fa-file-word"></i>
+        </button>
+      </div>
       <div id="preview" class="preview" role="region" aria-label="Преглед на генерирания текст"></div>
       <p class="footer-note">Текстът се генерира автоматично въз основа на Вашия избор</p>
     </section>
   </main>
 
   <footer class="site-footer">
-    <span class="version">v0.4.0</span> | <a href="/stats/" style="color: var(--accent);"><i class="fas fa-chart-line"></i> Статистика</a> | <a href="/docs/" style="color: var(--accent);">Документация</a> | <a href="/presentation/projector.html" style="color: var(--accent);"><i class="fas fa-desktop"></i> Презентация</a>
+    <span class="version">v0.4.1</span> | <a href="/stats/" style="color: var(--accent);"><i class="fas fa-chart-line"></i> Статистика</a> | <a href="/docs/" style="color: var(--accent);">Документация</a> | <a href="/presentation/projector.html" style="color: var(--accent);"><i class="fas fa-desktop"></i> Презентация</a>
   </footer>
 
   <script>
@@ -1605,7 +1609,8 @@
     // Генериране на DOCX
     downloadBtn.addEventListener('click', async () => {
       if (!validateForm()) return;
-      setButtonLoading(downloadBtn, true);
+      downloadBtn.disabled = true;
+      downloadBtn.style.opacity = '0.5';
       try {
         const d = collectData();
         const text = buildLetterText(d);
@@ -1628,7 +1633,8 @@
         console.error('Грешка при генериране на DOCX:', error);
         showStatus('Грешка при генериране на DOCX файла', 'error');
       } finally {
-        setButtonLoading(downloadBtn, false);
+        downloadBtn.disabled = false;
+        downloadBtn.style.opacity = '1';
       }
     });
 
